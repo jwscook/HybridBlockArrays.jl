@@ -51,7 +51,7 @@ Base.size(H::HybridBlockArray) = H.globalsize
 Base.size(H::HybridBlockArray, i) = 1 <= i <= 2 ? H.globalsize[i] : 1
 Base.eltype(H::HybridBlockArray{T}) where T = T
 Base.length(H::HybridBlockArray) = prod(size(H))
-function tiles(H, i, j)::Union{Matrix, SparseMatrixCSC}
+function tile(H, i, j)::Union{Matrix, SparseMatrixCSC}
   return H.isdenses[i, j] ? H.denses[i, j] : H.sparses[i, j]
 end
 function LinearAlgebra.transpose!(M::Matrix{<:AbstractMatrix})
@@ -128,7 +128,7 @@ function Base.getindex(H::HybridBlockArray{T}, i::Int, j::Int)::T where {T}
     return zero(eltype(H))
   end
   li, lj = tilelocaldindices(H, i, j)
-  return tiles(H, itile, jtile)[li, lj]
+  return tile(H, itile, jtile)[li, lj]
 end
 Base.setindex!(H::HybridBlockArray, v, ::Colon, js) = setindex!(H, v, 1:size(H, 1), js)
 Base.setindex!(H::HybridBlockArray, v, is, ::Colon) = setindex!(H, v, is, 1:size(H, 2))
