@@ -51,7 +51,9 @@ Base.size(H::HybridBlockArray) = H.globalsize
 Base.size(H::HybridBlockArray, i) = 1 <= i <= 2 ? H.globalsize[i] : 1
 Base.eltype(H::HybridBlockArray{T}) where T = T
 Base.length(H::HybridBlockArray) = prod(size(H))
-tiles(H, i, j) = H.isdenses[i, j] ? H.denses[i, j] : H.sparses[i, j]
+function tiles(H, i, j)::Union{Matrix, SparseMatrixCSC}
+  return H.isdenses[i, j] ? H.denses[i, j] : H.sparses[i, j]
+end
 function LinearAlgebra.transpose!(M::Matrix{<:AbstractMatrix})
   for i in eachindex(H.rowindices), j in eachindex(H.colindices)
     if i == j
