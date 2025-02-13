@@ -142,6 +142,7 @@ function Base.setindex!(H::HybridBlockArray{T}, v::Number, i::Integer, j::Intege
   end
   if H.isdenses[itile, jtile]
     H.denses[itile, jtile][li, lj] = v
+    H.isempties[itile, jtile] = false
   elseif !iszero(v)
     H.sparses[itile, jtile][li, lj] = v
     H.isempties[itile, jtile] = false

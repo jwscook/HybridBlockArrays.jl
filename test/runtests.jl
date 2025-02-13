@@ -40,22 +40,24 @@ using HybridBlockArrays, Test, SparseArrays, LinearAlgebra
   end
 
   @testset "transpose" begin
-    A = rand(ComplexF64, 4, 4)
-    A[1:2, 3:4] .= 0
-    b = HybridBlockArray(A, 2)
-    for i in 1:2, j in 3:4
-      @test HybridBlockArrays.tileisempty(b, i, j)
+    for A in (rand(ComplexF64, 4, 4), sprand(ComplexF64, 4, 4, 0.9))
+      A[1:2, 3:4] .= 0
+      b = HybridBlockArray(A, 2)
+      for i in 1:2, j in 3:4
+        @test HybridBlockArrays.tileisempty(b, i, j)
+      end
+      for j in 1:2, i in 3:4
+        @test !HybridBlockArrays.tileisempty(b, i, j)
+      end
+      transpose!(b)
+      for i in 1:2, j in 3:4
+        @test !HybridBlockArrays.tileisempty(b, i, j)
+      end
+      for j in 1:2, i in 3:4
+        @test HybridBlockArrays.tileisempty(b, i, j)
+      end
+      @test transpose(A) ≈ b
+      @test transpose!(b) ≈ A
     end
-    for j in 1:2, i in 3:4
-      @test !HybridBlockArrays.tileisempty(b, i, j)
-    end
-    transpose!(b)
-    for i in 1:2, j in 3:4
-      @test !HybridBlockArrays.tileisempty(b, i, j)
-    end
-    for j in 1:2, i in 3:4
-      @test HybridBlockArrays.tileisempty(b, i, j)
-    end
-    @test transpose(A) ≈ b
   end
 end
